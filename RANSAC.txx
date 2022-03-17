@@ -22,7 +22,7 @@ template<class T, class S>
 void RANSAC<T,S>::SetNumberOfThreads( unsigned int numberOfThreads )
 {
   if( numberOfThreads==0 || 
-      numberOfThreads>itk::MultiThreader::GetGlobalDefaultNumberOfThreads() )
+      numberOfThreads>itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() )
      throw ExceptionObject(__FILE__,__LINE__,
                            "Invalid setting for number of threads.");
 
@@ -100,8 +100,7 @@ double RANSAC<T,S>::Compute( std::vector<S> &parameters,
 
                   //STEP2: create the threads that generate hypotheses and test
 
-  itk::MultiThreader::Pointer threader = itk::MultiThreader::New();   
-  threader->SetNumberOfThreads( this->numberOfThreads );
+  itk::MultiThreaderBase::Pointer threader = itk::MultiThreaderBase::New();   
   threader->SetSingleMethod( RANSAC<T,S>::RANSACThreadCallback, this );
             //runs all threads and blocks till they finish
   threader->SingleMethodExecute();
@@ -136,7 +135,7 @@ double RANSAC<T,S>::Compute( std::vector<S> &parameters,
 template<class T, class S>
 ITK_THREAD_RETURN_TYPE RANSAC<T,S>::RANSACThreadCallback( void *arg )
 {
-  typedef itk::MultiThreader::ThreadInfoStruct ThreadInfoType;
+  typedef itk::MultiThreaderBase::WorkUnitInfo ThreadInfoType;
   ThreadInfoType *infoStruct = static_cast<ThreadInfoType*>( arg );
                            //dynamic_cast doesn't work with void *
   RANSAC<T,S> *caller = 
@@ -187,12 +186,12 @@ ITK_THREAD_RETURN_TYPE RANSAC<T,S>::RANSACThreadCallback( void *arg )
 			  }
 		  }
 
-      caller->hypothesisMutex.Lock();
+      caller->hypothesisMutex.lock();
 
                  //check that the sub-set just chosen is unique
 		  std::pair< typename std::set<int *, SubSetIndexComparator >::iterator, bool> res = caller->chosenSubSets->insert( curSubSetIndexes );
 		 
-      caller->hypothesisMutex.Unlock();
+      caller->hypothesisMutex.unlock();
 
 		  if(res.second == true) { //first time we chose this sub set        
 				                 //use the selected data for an exact model parameter fit
@@ -213,7 +212,7 @@ ITK_THREAD_RETURN_TYPE RANSAC<T,S>::RANSACThreadCallback( void *arg )
 					  numVotesForCur++;
 				  }
 			  }                            //found a larger consensus set?
-        caller->resultsMutex.Lock();
+        caller->resultsMutex.lock();
 			  if( numVotesForCur > caller->numVotesForBest ) {
 				  caller->numVotesForBest = numVotesForCur;
           std::copy( curVotes, curVotes+numDataObjects, caller->bestVotes );
@@ -227,7 +226,7 @@ ITK_THREAD_RETURN_TYPE RANSAC<T,S>::RANSACThreadCallback( void *arg )
 				    caller->numTries = caller->numTries<caller->allTries ? caller->numTries : caller->allTries;
           }
         }
-        caller->resultsMutex.Unlock();
+        caller->resultsMutex.unlock();
 		  }
 		  else {  //this sub set already appeared, release memory
 			  delete [] curSubSetIndexes;			
@@ -236,7 +235,7 @@ ITK_THREAD_RETURN_TYPE RANSAC<T,S>::RANSACThreadCallback( void *arg )
 	  delete [] curVotes;
 	  delete [] notChosen;
   }
-  return ITK_THREAD_RETURN_VALUE;
+  return ITK_THREAD_RETURN_DEFAULT_VALUE;
 }
 
 /*****************************************************************************/

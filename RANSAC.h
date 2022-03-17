@@ -8,9 +8,9 @@
 #include <time.h>
 #include <limits>
 #include "ParametersEstimator.h"
-#include "itkMultiThreader.h"
-#include "itkSimpleFastMutexLock.h"
-#include "itkExceptionObject.h"
+#include "itkMultiThreaderBase.h"
+#include <mutex>
+#include "itkMacro.h"
 
 /**
  * This class implements a multi-threaded version of the RAndom SAmple 
@@ -164,8 +164,8 @@ private:
    unsigned int allTries;
 
    typename ParametersEstimator<T,S>::Pointer paramEstimator;
-   itk::SimpleFastMutexLock hypothesisMutex;
-   itk::SimpleFastMutexLock resultsMutex;
+   std::mutex hypothesisMutex;
+   std::mutex resultsMutex;
 };
 
 } // end namespace itk
