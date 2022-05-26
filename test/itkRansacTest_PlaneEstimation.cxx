@@ -114,7 +114,7 @@ int itkRansacTest_PlaneEstimation(int argc, char *argv[])
   double percentageOfDataUsed;
   RANSACType::Pointer ransacEstimator = RANSACType::New();
   ransacEstimator->SetData( data );
-  ransacEstimator->SetParametersEstimator( planeEstimator.GetPointer() );
+  ransacEstimator->SetParametersEstimator(planeEstimator);
   percentageOfDataUsed = 
     ransacEstimator->Compute( planeParameters, desiredProbabilityForNoOutliers );
   if( planeParameters.empty() )

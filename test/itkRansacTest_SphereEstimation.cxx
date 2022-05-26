@@ -61,7 +61,7 @@ int itkRansacTest_SphereEstimation(int argc, char *argv[])
   const unsigned int DIMENSION = 3;
   const unsigned int INLIERS = 90;
   const unsigned int OUTLIERS = 10;
-  
+
   std::string leastSquaresOutputFileName = "leastSquaresSphereEstimation.iv";
   std::string ransacOutputFileName = "RANSACSphereEstimation.iv";
 
@@ -110,7 +110,7 @@ int itkRansacTest_SphereEstimation(int argc, char *argv[])
   double percentageOfDataUsed;
   RANSACType::Pointer ransacEstimator = RANSACType::New();
   ransacEstimator->SetData( data );
-  ransacEstimator->SetParametersEstimator( sphereEstimator.GetPointer() );
+  ransacEstimator->SetParametersEstimator( sphereEstimator );
   percentageOfDataUsed = 
     ransacEstimator->Compute( sphereParameters, desiredProbabilityForNoOutliers );
   if( sphereParameters.empty() )
