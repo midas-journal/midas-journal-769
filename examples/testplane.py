@@ -10,7 +10,8 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
     pointOnPlane = np.zeros(3)
     randomPoint = np.zeros(3)
     
-    noiseStandardDeviation = 0.4 # noise standard deviation
+    # noise standard deviation
+    noiseStandardDeviation = 0.4
     coordinateMax = 1000.0
     
     planeParameters.clear()
@@ -22,10 +23,6 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
   
     normal = normal / np.sqrt(np.sum(normal**2))
 
-    #normal.Normalize()
-    print(normal)
-    print(pointOnPlane)
-
     for i in range(dimension):
         planeParameters.push_back( normal[i])
     
@@ -36,7 +33,7 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
     for i in range(numInliers):
         for j in range(dimension):
             randomPoint[j] = np.random.uniform( -coordinateMax, coordinateMax )
-            noise[j] = np.random.normal( noiseStandardDeviation )
+            noise[j] = np.random.normal(0, noiseStandardDeviation)
     
         # project random point onto the plane and add noise
         tmp = randomPoint - pointOnPlane
@@ -48,10 +45,11 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
     while(count_Outliers < numOutliers):
         for j in range(dimension):
             randomPoint[j] = np.random.uniform( -coordinateMax, coordinateMax )
+        
         tmp = randomPoint - pointOnPlane
         if (np.abs(np.sum(np.multiply(tmp, normal))) >= outlierDistance ):
             data.push_back(randomPoint)
-            count_Outliers = numOutliers+1
+            count_Outliers = count_Outliers+1
     
 DIMENSION = 3
 INLIERS = 90
@@ -63,34 +61,38 @@ maximalDistanceFromPlane = 0.5
 PlaneEstimatorType = itk.PlaneParametersEstimator[3]
 #RANSACType = itk.RANSAC[itk.Point[itk.D, 3], itk.D]
 
-true_array = [0.460999, 0.721842, 0.516164, -874.896, 897.281, 101.569]
+#true_array = [0.460999, 0.721842, 0.516164, -874.896, 897.281, 101.569]
 
 data = itk.vector.itkPointD3()
 planeParameters = itk.vector.D()
 truePlaneParameters = itk.vector.D()
 
-for i, k in enumerate(true_array):
-    truePlaneParameters.push_back(true_array[i])
-
-print(truePlaneParameters)
-
-
 GenerateData(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters)
+
+
+print("True plane parameters")
+print("[", ", ".join([str(np.round(x, 3)) for x in truePlaneParameters]), "]")
+
 print('Data Generation Done')
-#data_np = itk.array_from_vector_container(data)
-#print(data_np.shape)
+print('Number of samples generated ', data.size())
 
 planeEstimator = PlaneEstimatorType.New()
 planeEstimator.SetDelta(maximalDistanceFromPlane)
 planeEstimator.LeastSquaresEstimate(data, planeParameters)
 
-
 print("Least squares hyper(plane) parameters: [n,a]")
-for i in range(2*DIMENSION):
-    print(planeParameters[i])
+print("[", ", ".join([str(np.round(x, 3)) for x in planeParameters]), "]")
+
 
 dotProduct = 0
 for i in range(DIMENSION):
-    dotProduct += planeParameters[i]*truePlaneParameters[i]
-	  
+    dotProduct += truePlaneParameters[i]*planeParameters[i]
+    #print(i, dotProduct, truePlaneParameters[i], planeParameters[i])
+
 print("dotProduct  ", dotProduct)
+
+dotProduct = 0
+print("Check if computed point is on known plane [0=correct]")
+for i in range(DIMENSION):
+    dotProduct += (planeParameters[DIMENSION+i] - truePlaneParameters[DIMENSION+i])*truePlaneParameters[i]
+print(dotProduct)
