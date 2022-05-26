@@ -3,12 +3,12 @@ import numpy as np
 
 def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters ):
     dimension = 3
-    normal = np.zeros(3)
-    noise = np.zeros(3)
-    tmp = np.zeros(3)
+    normal = np.zeros(dimension)
+    noise = np.zeros(dimension)
+    tmp = np.zeros(dimension)
     
-    pointOnPlane = np.zeros(3)
-    randomPoint = np.zeros(3)
+    pointOnPlane = np.zeros(dimension)
+    randomPoint = np.zeros(dimension)
     
     # noise standard deviation
     noiseStandardDeviation = 0.4
@@ -37,8 +37,9 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
     
         # project random point onto the plane and add noise
         tmp = randomPoint - pointOnPlane
-        randomPoint = pointOnPlane + noise + (tmp - (tmp*normal)*normal)
-        data.push_back( randomPoint)
+        
+        randomPoint = pointOnPlane + noise + (tmp - (np.sum(tmp*normal))*normal)
+        data.push_back([randomPoint[0], randomPoint[1], randomPoint[2]])
     
     # generate outliers (via rejection)
     count_Outliers = 0
@@ -47,8 +48,8 @@ def GenerateData(numInliers, numOutliers, outlierDistance, data, planeParameters
             randomPoint[j] = np.random.uniform( -coordinateMax, coordinateMax )
         
         tmp = randomPoint - pointOnPlane
-        if (np.abs(np.sum(np.multiply(tmp, normal))) >= outlierDistance ):
-            data.push_back(randomPoint)
+        if (np.abs(np.sum(tmp * normal)) >= outlierDistance ):
+            data.push_back([randomPoint[0], randomPoint[1], randomPoint[2]])
             count_Outliers = count_Outliers+1
     
 DIMENSION = 3
@@ -59,9 +60,7 @@ outlierDistance = 20.0
 maximalDistanceFromPlane = 0.5
 
 PlaneEstimatorType = itk.PlaneParametersEstimator[3]
-#RANSACType = itk.RANSAC[itk.Point[itk.D, 3], itk.D]
-
-#true_array = [0.460999, 0.721842, 0.516164, -874.896, 897.281, 101.569]
+RANSACType = itk.RANSAC[itk.Point[itk.D, 3], itk.D]
 
 data = itk.vector.itkPointD3()
 planeParameters = itk.vector.D()
@@ -69,12 +68,13 @@ truePlaneParameters = itk.vector.D()
 
 GenerateData(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters)
 
-
 print("True plane parameters")
 print("[", ", ".join([str(np.round(x, 3)) for x in truePlaneParameters]), "]")
 
+
 print('Data Generation Done')
 print('Number of samples generated ', data.size())
+
 
 planeEstimator = PlaneEstimatorType.New()
 planeEstimator.SetDelta(maximalDistanceFromPlane)
@@ -87,9 +87,39 @@ print("[", ", ".join([str(np.round(x, 3)) for x in planeParameters]), "]")
 dotProduct = 0
 for i in range(DIMENSION):
     dotProduct += truePlaneParameters[i]*planeParameters[i]
-    #print(i, dotProduct, truePlaneParameters[i], planeParameters[i])
 
 print("dotProduct  ", dotProduct)
+
+dotProduct = 0
+print("Check if computed point is on known plane [0=correct]")
+for i in range(DIMENSION):
+    dotProduct += (planeParameters[DIMENSION+i] - truePlaneParameters[DIMENSION+i])*truePlaneParameters[i]
+print(dotProduct)
+
+
+
+print('Size of data after LEast Squares ', data.size())
+# Performing RANSAC based estimation
+desiredProbabilityForNoOutliers = 0.999
+ransacEstimator = RANSACType.New()
+ransacEstimator.SetData( data )
+ransacEstimator.SetNumberOfThreads(8)
+ransacEstimator.SetParametersEstimator(planeEstimator)
+percentageOfDataUsed = ransacEstimator.Compute( planeParameters, desiredProbabilityForNoOutliers )
+
+
+
+print('percentageOfDataUsed  is ', percentageOfDataUsed)
+
+print("RANSAC hyper(plane) parameters: [n,a]")
+print("[", ", ".join([str(np.round(x, 3)) for x in planeParameters]), "]")
+
+
+dotProduct = 0
+for i in range(DIMENSION):
+    dotProduct += truePlaneParameters[i]*planeParameters[i]
+print("dotProduct  ", dotProduct)
+
 
 dotProduct = 0
 print("Check if computed point is on known plane [0=correct]")
