@@ -71,10 +71,7 @@ GenerateData(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters)
 print("True plane parameters")
 print("[", ", ".join([str(np.round(x, 3)) for x in truePlaneParameters]), "]")
 
-
-print('Data Generation Done')
-print('Number of samples generated ', data.size())
-
+print("                      ")
 
 planeEstimator = PlaneEstimatorType.New()
 planeEstimator.SetDelta(maximalDistanceFromPlane)
@@ -82,23 +79,19 @@ planeEstimator.LeastSquaresEstimate(data, planeParameters)
 
 print("Least squares hyper(plane) parameters: [n,a]")
 print("[", ", ".join([str(np.round(x, 3)) for x in planeParameters]), "]")
-
-
 dotProduct = 0
 for i in range(DIMENSION):
     dotProduct += truePlaneParameters[i]*planeParameters[i]
-
-print("dotProduct  ", dotProduct)
+print("        Dot product of real and computed normals[+-1=correct] : ", dotProduct)
 
 dotProduct = 0
-print("Check if computed point is on known plane [0=correct]")
 for i in range(DIMENSION):
     dotProduct += (planeParameters[DIMENSION+i] - truePlaneParameters[DIMENSION+i])*truePlaneParameters[i]
-print(dotProduct)
+print("        Check if computed point is on known plane [0=correct] : ", dotProduct)
 
+for i in range(3):
+    print("                      ")
 
-
-print('Size of data after LEast Squares ', data.size())
 # Performing RANSAC based estimation
 desiredProbabilityForNoOutliers = 0.999
 ransacEstimator = RANSACType.New()
@@ -114,15 +107,12 @@ print('percentageOfDataUsed  is ', percentageOfDataUsed)
 print("RANSAC hyper(plane) parameters: [n,a]")
 print("[", ", ".join([str(np.round(x, 3)) for x in planeParameters]), "]")
 
-
 dotProduct = 0
 for i in range(DIMENSION):
     dotProduct += truePlaneParameters[i]*planeParameters[i]
-print("dotProduct  ", dotProduct)
-
+print("        Dot product of real and computed normals[+-1=correct] : ", dotProduct)
 
 dotProduct = 0
-print("Check if computed point is on known plane [0=correct]")
 for i in range(DIMENSION):
     dotProduct += (planeParameters[DIMENSION+i] - truePlaneParameters[DIMENSION+i])*truePlaneParameters[i]
-print(dotProduct)
+print("       Check if computed point is on known plane [0=correct] : ", dotProduct)
