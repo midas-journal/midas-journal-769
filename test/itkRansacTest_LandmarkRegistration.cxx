@@ -2,7 +2,8 @@
 #include "itkRANSAC.h"
 #include "itkLandmarkRegistrationEstimator.h"
 #include "RandomNumberGenerator.h"
-
+#include "itkMesh.h"
+#include "itkMeshFileReader.h"
 
 
 template <unsigned int dimension>
@@ -21,7 +22,7 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
   const unsigned int INLIERS = 10;
   const unsigned int OUTLIERS = 0;//10;
   
-  typedef itk::RANSAC<double, double> RANSACType;
+  typedef itk::RANSAC<itk::Point<double, 6>, double> RANSACType;
 
   std::vector<double> data;
   std::vector<double> truePlaneParameters, planeParameters;
@@ -29,7 +30,7 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
   unsigned int        i;
   double              dotProduct;
 
-  //GenerateData<DIMENSION>(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters);
+  GenerateData<DIMENSION>(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters);
 
   std::cout << "Known (hyper)plane parameters [n,a]\n\t [ ";
   for (i = 0; i < (2 * DIMENSION - 1); i++)
@@ -41,8 +42,8 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
   // create and initialize the parameter estimator
   double                      maximalDistanceFromPlane = 0.5;
   auto registrationEstimator = itk::LandmarkRegistrationEstimator<6>::New();
-  // registrationEstimator->SetDelta(maximalDistanceFromPlane);
-  // registrationEstimator->LeastSquaresEstimate(data, planeParameters);
+  registrationEstimator->SetDelta(maximalDistanceFromPlane);
+  registrationEstimator->LeastSquaresEstimate(data, planeParameters);
 
   // if (planeParameters.empty())
   // {
@@ -123,36 +124,41 @@ void
 GenerateData(unsigned int          numInliers,
              unsigned int          numOutliers,
              double                outlierDistance,
-             std::vector<double> & data,
+             std::vector<itk::Point<double, dimension>> & data,
              std::vector<double> & planeParameters)
 {
-  itk::Vector<double, dimension> normal, noise, tmp;
+  using CoordinateType = double;
+  using MeshType = itk::Mesh<CoordinateType, 3>;
 
-  double                         noiseStandardDeviation = 0.4; // noise standard deviation
-  double                         coordinateMax = 1000.0;
-  unsigned int                   i, j;
+  using ReaderType = itk::MeshFileReader<MeshType>;
+  auto reader = ReaderType::New();
+  reader->SetFileName("");
+  reader->Update();
+  auto mesh1 = reader->GetOutput();
 
-  RandomNumberGenerator random;
-
-  planeParameters.clear();
+  reader->SetFileName("");
+  reader->Update();
+  auto mesh2 = reader->GetOutput();
   
-  for (i = 0; i < dimension; i++)
+  data.reserve(mesh1->GetNumberOfPoints());
+  using PointType = itk::Point<CoordinateType, 6>;
+ 
+  // Concatenate corressponding points from two meshes and insert in the data vector
+  PointType p0;
+  for(int i = 0; i < mesh1->GetNumberOfPoints(); ++i)
   {
-    normal[i] = random.uniform();
-  }
-  normal.Normalize();
-  for (i = 0; i < dimension; i++)
-    planeParameters.push_back(normal[i]);
-  
-  // generate inliers
-  for (i = 0; i < numInliers; i++)
-  {
-    for (j = 0; j < dimension; j++)
-    {
-      noise[j] = random.normal(noiseStandardDeviation);
-    }
-    
+    auto point1 = mesh1->GetPoint(i);
+    auto point2 = mesh2->GetPoint(i);
+
+    p0[0] = point1[0];
+    p0[1] = point1[1];
+    p0[2] = point1[2];
+    p0[3] = point2[0];
+    p0[4] = point2[1];
+    p0[5] = point2[2];
+
+    data.insert(i, p0);
   }
 
-  
+  return;
 }
