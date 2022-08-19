@@ -65,25 +65,8 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
       std::cout << transformParameters[i] << ", ";
     }
   }
-    
-  //   dotProduct = 0.0;
-  //   for (i = 0; i < DIMENSION; i++)
-  //   {
-  //     dotProduct += planeParameters[i] * truePlaneParameters[i];
-  //   }
-  //   std::cout << "\tDot product of real and computed normals[+-1=correct]: ";
-  //   std::cout << dotProduct << "\n";
-    
-  //   dotProduct = 0.0;
-  //   for (i = 0; i < DIMENSION; i++)
-  //   {
-  //     dotProduct += (planeParameters[DIMENSION + i] - truePlaneParameters[DIMENSION + i]) * truePlaneParameters[i];
-  //   }
-    
-  //   std::cout << dotProduct << "\n\n";
-    
-    std::cout << percentageOfDataUsed << "\n\n";
-  // }
+
+  std::cout << "percentageOfDataUsed " << percentageOfDataUsed << "\n\n";
   return EXIT_SUCCESS;
 }
 
