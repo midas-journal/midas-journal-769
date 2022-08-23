@@ -30,10 +30,10 @@ template <unsigned int dimension>
 class ITK_TEMPLATE_EXPORT LandmarkRegistrationEstimator : public ParametersEstimator<Point<double, dimension>, double>
 {
 public:
-  typedef LandmarkRegistrationEstimator       Self;
+  typedef LandmarkRegistrationEstimator                         Self;
   typedef ParametersEstimator<Point<double, dimension>, double> Superclass;
-  typedef SmartPointer<Self>                  Pointer;
-  typedef SmartPointer<const Self>            ConstPointer;
+  typedef SmartPointer<Self>                                    Pointer;
+  typedef SmartPointer<const Self>                              ConstPointer;
 
   itkTypeMacro(LandmarkRegistrationEstimator, ParametersEstimator);
   /** New method for creating an object using a factory. */

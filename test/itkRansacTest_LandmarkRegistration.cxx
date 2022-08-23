@@ -20,23 +20,23 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
 {
   const unsigned int DIMENSION = 6;
   const unsigned int INLIERS = 10;
-  const unsigned int OUTLIERS = 0;//10;
-  
+  const unsigned int OUTLIERS = 0; // 10;
+
   typedef itk::RANSAC<itk::Point<double, 6>, double> RANSACType;
 
   std::vector<itk::Point<double, 6>> data;
-  std::vector<double> truePlaneParameters, transformParameters;
-  double              outlierDistance = 20.0;
+  std::vector<double>                truePlaneParameters, transformParameters;
+  double                             outlierDistance = 20.0;
 
   GenerateData<DIMENSION>(INLIERS, OUTLIERS, outlierDistance, data, truePlaneParameters);
 
   // create and initialize the parameter estimator
-  double                      maximalDistanceFromPlane = 6;
-  auto registrationEstimator = itk::LandmarkRegistrationEstimator<6>::New();
+  double maximalDistanceFromPlane = 6;
+  auto   registrationEstimator = itk::LandmarkRegistrationEstimator<6>::New();
   registrationEstimator->SetMinimalForEstimate(3);
   registrationEstimator->SetDelta(maximalDistanceFromPlane);
   registrationEstimator->LeastSquaresEstimate(data, transformParameters);
-  
+
   std::cout << "Least Squares Estimate is " << std::endl;
   unsigned int i = 0;
   for (i = 0; i < transformParameters.size(); i++)
@@ -44,7 +44,7 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
     std::cout << transformParameters[i] << ", ";
   }
 
-  
+
   // create and initialize the RANSAC algorithm
   double              desiredProbabilityForNoOutliers = 0.999;
   double              percentageOfDataUsed;
@@ -73,13 +73,13 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
 
 template <unsigned int dimension>
 void
-GenerateData(unsigned int          numInliers,
-             unsigned int          numOutliers,
-             double                outlierDistance,
+GenerateData(unsigned int                                 numInliers,
+             unsigned int                                 numOutliers,
+             double                                       outlierDistance,
              std::vector<itk::Point<double, dimension>> & data,
-             std::vector<double> & planeParameters)
+             std::vector<double> &                        planeParameters)
 {
-  
+
   // Read the two point sets that are the putative matches
   using CoordinateType = double;
   using MeshType = itk::Mesh<CoordinateType, 3>;
@@ -94,13 +94,13 @@ GenerateData(unsigned int          numInliers,
   reader2->SetFileName("/home/pranjal.sahu/ethicon_aws/deep_learning/deep_learning/train/moving.vtk");
   reader2->Update();
   auto mesh2 = reader2->GetOutput();
-  
+
   data.reserve(mesh1->GetNumberOfPoints());
- 
+
   // Concatenate corressponding points from two meshes and insert in the data vector
   using PointType = itk::Point<CoordinateType, 6>;
   PointType p0;
-  for(unsigned int i = 0; i < mesh1->GetNumberOfPoints(); ++i)
+  for (unsigned int i = 0; i < mesh1->GetNumberOfPoints(); ++i)
   {
     auto point1 = mesh1->GetPoint(i);
     auto point2 = mesh2->GetPoint(i);

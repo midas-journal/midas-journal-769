@@ -61,7 +61,7 @@ itkRansacTest_PlaneEstimation(int argc, char * argv[])
 {
   const unsigned int DIMENSION = 3;
   const unsigned int INLIERS = 10;
-  const unsigned int OUTLIERS = 0;//10;
+  const unsigned int OUTLIERS = 0; // 10;
   std::string        leastSquaresOutputFileName = "leastSquaresPlaneEstimation.iv";
   std::string        ransacOutputFileName = "RANSACPlaneEstimation.iv";
 

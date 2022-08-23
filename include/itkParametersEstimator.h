@@ -97,10 +97,7 @@ public:
   GetMinimalForEstimate();
 
 protected:
-  ParametersEstimator()
-  {
-    this->minForEstimate = 0;
-  }
+  ParametersEstimator() { this->minForEstimate = 0; }
   ~ParametersEstimator() {}
 
   // minimal number of data objects required for an exact estimate
