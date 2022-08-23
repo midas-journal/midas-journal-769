@@ -23,7 +23,7 @@ INLIERS = 90
 OUTLIERS = 10
 outlierDistance = 20.0
 
-RANSACType = itk.RANSAC[itk.Point[itk.D, 3], itk.D]
+RANSACType = itk.RANSAC[itk.Point[itk.D, 6], itk.D]
 
 transformParameters = itk.vector.D()
 maximalDistanceFromPlane = 6
@@ -36,13 +36,16 @@ registrationEstimator.LeastSquaresEstimate(data, transformParameters)
 print("Least squares hyper(plane) parameters: [n,a]")
 print("[", ", ".join([str(np.round(x, 3)) for x in transformParameters]), "]")
 
-#desiredProbabilityForNoOutliers = 0.999
-#percentageOfDataUsed = registrationEstimator.Compute( planeParameters, desiredProbabilityForNoOutliers )
-
 # Performing RANSAC based estimation
-# desiredProbabilityForNoOutliers = 0.999
-# ransacEstimator = RANSACType.New()
-# ransacEstimator.SetData( data )
-# ransacEstimator.SetNumberOfThreads(8)
-# ransacEstimator.SetParametersEstimator(planeEstimator)
-# percentageOfDataUsed = ransacEstimator.Compute( planeParameters, desiredProbabilityForNoOutliers )
+desiredProbabilityForNoOutliers = 0.999
+ransacEstimator = RANSACType.New()
+ransacEstimator.SetData(data)
+ransacEstimator.SetNumberOfThreads(8)
+ransacEstimator.SetParametersEstimator(registrationEstimator)
+percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
+
+print("Percentage of points used ", percentageOfDataUsed)
+print("RANSAC parameters: [n,a]")
+print("[", ", ".join([str(np.round(x, 3)) for x in transformParameters]), "]")
+
+
