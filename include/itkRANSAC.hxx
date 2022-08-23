@@ -86,7 +86,7 @@ RANSAC<T, SType>::SetData(std::vector<T> & data)
 
 template <typename T, typename SType>
 double
-RANSAC<T, SType>::Compute(std::vector<S> & parameters, double desiredProbabilityForNoOutliers)
+RANSAC<T, SType>::Compute(std::vector<SType> & parameters, double desiredProbabilityForNoOutliers)
 {
   // STEP1: setup
   parameters.clear();
@@ -159,7 +159,7 @@ RANSAC<T, SType>::RANSACThreadCallback(void * arg)
   typedef itk::MultiThreaderBase::WorkUnitInfo ThreadInfoType;
   ThreadInfoType *                             infoStruct = static_cast<ThreadInfoType *>(arg);
   // dynamic_cast doesn't work with void *
-  RANSAC<T, S> * caller = reinterpret_cast<RANSAC<T, S> *>(infoStruct->UserData);
+  RANSAC<T, SType> * caller = reinterpret_cast<RANSAC<T, SType> *>(infoStruct->UserData);
 
   if (caller != NULL)
   {
@@ -170,7 +170,7 @@ RANSAC<T, SType>::RANSACThreadCallback(void * arg)
     unsigned int     numDataObjects = caller->data.size();
     unsigned int     numForEstimate = caller->paramEstimator->GetMinimalForEstimate();
     std::vector<T *> exactEstimateData;
-    std::vector<S>   exactEstimateParameters;
+    std::vector<SType>   exactEstimateParameters;
     double           denominator;
 
     // true if data[i] agrees with the current model, otherwise false
