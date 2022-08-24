@@ -1,8 +1,6 @@
 itk_module_test()
 
 set(RansacTests
-	itkRansacTest_PlaneEstimation.cxx
-  itkRansacTest_SphereEstimation.cxx
   itkRansacTest_LandmarkRegistration.cxx
   )
 
