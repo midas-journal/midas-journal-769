@@ -22,6 +22,7 @@
 #include "itkLandmarkRegistrationEstimator.h"
 #include "itkPoint.h"
 #include "itkObjectFactory.h"
+#include "itkPointsLocator.h"
 
 namespace itk
 {
@@ -34,6 +35,9 @@ public:
   typedef ParametersEstimator<Point<double, Dimension>, double> Superclass;
   typedef SmartPointer<Self>                                    Pointer;
   typedef SmartPointer<const Self>                              ConstPointer;
+
+  using PointsLocatorType = itk::PointsLocator<itk::VectorContainer<IdentifierType, itk::Point<double, 3>>>;
+  using PointsContainer = itk::VectorContainer<IdentifierType, itk::Point<double, 3>>;
 
   itkTypeMacro(LandmarkRegistrationEstimator, ParametersEstimator);
   /** New method for creating an object using a factory. */
@@ -61,6 +65,8 @@ public:
   virtual double
   GetDelta();
 
+  void SetAgreeData(std::vector<Point<double, Dimension>> & data);
+
 protected:
   LandmarkRegistrationEstimator();
   ~LandmarkRegistrationEstimator();
@@ -72,6 +78,8 @@ private:
                            // given line L and point P, if dist(L,P)^2 < delta^2 then the
                            // point is on the line
   double deltaSquared;
+  PointsLocatorType::Pointer pointsLocator;
+  PointsContainer::Pointer agreePoints;
 };
 
 } // end namespace itk

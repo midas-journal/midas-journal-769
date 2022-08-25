@@ -48,6 +48,7 @@ maximalDistanceFromPlane = 1.7
 RegistrationEstimatorType = itk.Ransac.LandmarkRegistrationEstimator[6]
 registrationEstimator = RegistrationEstimatorType.New()
 registrationEstimator.SetMinimalForEstimate(100)
+registrationEstimator.SetAgreeData(agreeData)
 registrationEstimator.SetDelta(maximalDistanceFromPlane)
 registrationEstimator.LeastSquaresEstimate(data, transformParameters)
 
@@ -59,7 +60,7 @@ desiredProbabilityForNoOutliers = 0.999
 ransacEstimator = RANSACType.New()
 ransacEstimator.SetData(data)
 ransacEstimator.SetAgreeData(agreeData)
-ransacEstimator.SetMaxIteration(10000)
+ransacEstimator.SetMaxIteration(1000)
 ransacEstimator.SetNumberOfThreads(8)
 ransacEstimator.SetParametersEstimator(registrationEstimator)
 percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
