@@ -62,7 +62,7 @@ desiredProbabilityForNoOutliers = 0.999
 ransacEstimator = RANSACType.New()
 ransacEstimator.SetData(data)
 ransacEstimator.SetAgreeData(agreeData)
-ransacEstimator.SetMaxIteration(4000)
+ransacEstimator.SetMaxIteration(2000)
 ransacEstimator.SetNumberOfThreads(16)
 ransacEstimator.SetParametersEstimator(registrationEstimator)
 percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
