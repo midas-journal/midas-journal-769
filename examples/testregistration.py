@@ -46,6 +46,8 @@ outlierDistance = 20.0
 RANSACType = itk.RANSAC[itk.Point[itk.D, 6], itk.D]
 
 transformParameters = itk.vector.D()
+bestTransformParameters = itk.vector.D()
+
 maximumDistance = 3
 RegistrationEstimatorType = itk.Ransac.LandmarkRegistrationEstimator[6]
 registrationEstimator = RegistrationEstimatorType.New()
@@ -62,23 +64,32 @@ desiredProbabilityForNoOutliers = 0.999
 ransacEstimator = RANSACType.New()
 ransacEstimator.SetData(data)
 ransacEstimator.SetAgreeData(agreeData)
-ransacEstimator.SetMaxIteration(2000)
+ransacEstimator.SetMaxIteration(1000)
 ransacEstimator.SetNumberOfThreads(16)
 ransacEstimator.SetParametersEstimator(registrationEstimator)
-percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
 
-print("Percentage of points used ", percentageOfDataUsed)
+bestPercentage = 0
+for i in range(5):
+    percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
+    if percentageOfDataUsed > bestPercentage:
+        bestPercentage = percentageOfDataUsed
+        bestTransformParameters.clear()
+        for k in range(transformParameters.size()):
+            bestTransformParameters.push_back(transformParameters[k])
+    print('Percentage used ', percentageOfDataUsed)
+
+print("Percentage of points used ", bestPercentage)
 print("RANSAC parameters: [n,a]")
-print("[", ", ".join([str(np.round(x, 3)) for x in transformParameters]), "]")
+print("[", ", ".join([str(np.round(x, 3)) for x in bestTransformParameters]), "]")
 
 transform = itk.Similarity3DTransform.D.New()
 p = transform.GetParameters()
 f = transform.GetFixedParameters()
 for i in range(7):
-    p.SetElement(i, transformParameters[i])
+    p.SetElement(i, bestTransformParameters[i])
 counter = 0
 for i in range(7, 10):
-    f.SetElement(counter, transformParameters[i])
+    f.SetElement(counter, bestTransformParameters[i])
     counter = counter + 1
 transform.SetParameters(p)
 transform.SetFixedParameters(f)

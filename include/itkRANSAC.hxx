@@ -224,7 +224,7 @@ RANSAC<T, SType>::Compute(std::vector<SType> & parameters, double desiredProbabi
         auto transformedPoint = transform->TransformPoint(testPoint);
         auto pointId = pointsLocator->FindClosestPoint(transformedPoint);
         auto corresPoint = points->GetElement(pointId);
-        
+
         // Insert the corresponding point for leastSquaresEstimate
         inlierPoint[0] = tempPoint[0];
         inlierPoint[1] = tempPoint[1];
@@ -290,10 +290,8 @@ RANSAC<T, SType>::RANSACThreadCallback(void * arg)
     for (i = 0; i < caller->numTries; i++)
     {
       counter = counter + 1;
-
       if (counter > caller->maxIteration)
       {
-        std::cout << "Counter crossed " << counter << std::endl;
         break;
       }
       // randomly select data for exact model fit ('numForEstimate' objects).
@@ -328,11 +326,9 @@ RANSAC<T, SType>::RANSACThreadCallback(void * arg)
       }
 
       caller->hypothesisMutex.lock();
-
       // check that the sub-set just chosen is unique
       std::pair<typename std::set<int *, SubSetIndexComparator>::iterator, bool> res =
-          caller->chosenSubSets->insert(curSubSetIndexes);
-
+         caller->chosenSubSets->insert(curSubSetIndexes);
       caller->hypothesisMutex.unlock();
 
       if (res.second == true)
@@ -356,7 +352,7 @@ RANSAC<T, SType>::RANSACThreadCallback(void * arg)
         //   checkdata.push_back(caller->agreeData[m]);
         // }
 
-        auto result = caller->paramEstimator->AgreeMultiple(exactEstimateParameters, caller->agreeData);
+        auto result = caller->paramEstimator->AgreeMultiple(exactEstimateParameters, caller->agreeData, caller->numVotesForBest);
         for (m = 0; m < numAgreeObjects; m++)
         { 
           if (result[m])
