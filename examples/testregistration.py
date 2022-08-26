@@ -3,7 +3,7 @@ import numpy as np
 import random
 import copy
 
-casename = 'GJCIEB'
+casename = 'FBGH'
 
 def GenerateData(data, agreeData):
     dimension = 6
@@ -63,7 +63,7 @@ ransacEstimator = RANSACType.New()
 ransacEstimator.SetData(data)
 ransacEstimator.SetAgreeData(agreeData)
 ransacEstimator.SetMaxIteration(1000)
-ransacEstimator.SetNumberOfThreads(1)
+ransacEstimator.SetNumberOfThreads(16)
 ransacEstimator.SetParametersEstimator(registrationEstimator)
 percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProbabilityForNoOutliers )
 
