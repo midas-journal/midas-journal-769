@@ -38,7 +38,7 @@ itkRansacTest_LandmarkRegistration(int argc, char * argv[])
       std::cerr << "Missing arguments." << std::endl;
       std::cerr << "Usage: " << std::endl;
       std::cerr << argv[0]
-                << "movingFeatureMesh, "
+                << " movingFeatureMesh, "
                 << "fixedFeatureMesh, "
                 << "movingMesh, "
                 << "fixedMesh "
