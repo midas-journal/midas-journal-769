@@ -24,7 +24,7 @@ defines an interface.
 
 <br/><br/>
 **Sample Usage in Python for 3D PointSet is shown here:**
-```
+```python
 data = itk.vector[itk.Point[itk.D, 6]]()
 agreeData = itk.vector[itk.Point[itk.D, 6]]()
 GenerateData(data, agreeData)
