@@ -22,7 +22,7 @@ defines an interface.
 3. [itkLandmarkRegistrationEstimator.{h,hxx}](./include/itkLandmarkRegistrationEstimator.hxx) - Estimation code for landmark based pointset registration.
 4. [Testing/*.cxx](./test/itkRansacTest_LandmarkRegistration) - Test for the PointSet registration using landmark points.
 
-
+<br/><br/>
 **Sample Usage in Python for 3D PointSet is shown here:**
 ```
 data = itk.vector[itk.Point[itk.D, 6]]()
@@ -52,3 +52,8 @@ percentageOfDataUsed = ransacEstimator.Compute( transformParameters, desiredProb
 for i in transformParameters:
   print(i)
 ```
+
+<br/><br/>
+**Landmarks can be obtained by performing feature matching.**
+
+For this one can use the [ITKFPFH](https://github.com/InsightSoftwareConsortium/ITKFPFH) library.
