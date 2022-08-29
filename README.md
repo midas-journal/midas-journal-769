@@ -23,7 +23,7 @@ defines an interface.
 4. [Testing/*.cxx](./test/itkRansacTest_LandmarkRegistration) - Test for the PointSet registration using landmark points.
 
 
-**Sample Usage in Python is shown here:**
+**Sample Usage in Python for 3D PointSet is shown here:**
 ```
 data = itk.vector[itk.Point[itk.D, 6]]()
 agreeData = itk.vector[itk.Point[itk.D, 6]]()
