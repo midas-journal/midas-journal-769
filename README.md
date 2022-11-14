@@ -1,6 +1,9 @@
 ITKRANSAC
 =================================
 
+[<img src="https://github.com/InsightSoftwareConsortium/ITKRANSAC/actions/workflows/build-test-package.yml/badge.svg">](https://github.com/InsightSoftwareConsortium/ITKRANSAC/actions)
+[<img src="https://img.shields.io/pypi/v/itk-ransac.svg">](https://pypi.python.org/pypi/itk-ransac)
+
 Overview
 --------
 This is the source code for a C++ templated implementation of the RANSAC
